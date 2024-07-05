@@ -20,6 +20,7 @@ import {
 	deleteDoc,
 	updateDoc,
 } from 'firebase/firestore';
+import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -47,6 +48,7 @@ export const authService = {
 
 // Initialize Firestore and get a reference to the service
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 async function wrapAddDoc(tweet) {
 	await addDoc(collection(db, 'nweet'), tweet);
@@ -88,4 +90,11 @@ export const dbService = {
 	onSnapshot: wrapOnSnapshot,
 	deleteDoc: wrapDeleteDoc,
 	updateDoc: wrapUpdateDoc,
+};
+export const storageService = {
+	ref,
+	storage,
+	uploadString,
+	getDownloadURL,
+	deleteObject,
 };
