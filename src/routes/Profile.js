@@ -1,36 +1,41 @@
 import { authService, dbService } from 'fbase';
 import { useNavigate } from 'react-router-dom';
-import Nweet from 'components/Nweet';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const Profile = ({ userObj }) => {
+const Profile = ({ userObj, refreshUser }) => {
 	const auth = authService.getAuth();
 	const navigate = useNavigate();
-	const [nweets, setNweets] = useState([]);
+	const [newDisplayName, setNewDisplayName] = useState(
+		userObj.displayName ? userObj.displayName : '',
+	);
 
 	const onLogOutClick = () => {
 		authService.signOut(auth);
 		navigate('/');
 	};
 
-	const getMyNweets = async () => {
-		const newArray = await dbService.getDocsList(userObj.uid);
-		console.log(newArray);
-		setNweets(newArray);
+	const onChange = (event) => {
+		const {
+			target: { value },
+		} = event;
+		setNewDisplayName(value);
 	};
 
-	useEffect(() => {
-		getMyNweets();
-	}, []);
+	const onSubmit = async (event) => {
+		event.preventDefault();
+		if (userObj.displayName !== newDisplayName) {
+			await authService.updateProfile(auth.currentUser, { displayName: newDisplayName });
+			refreshUser();
+		}
+	};
 
 	return (
 		<>
+			<form onSubmit={onSubmit}>
+				<input onChange={onChange} type='text' placeholder='Display name' value={newDisplayName} />
+				<input type='submit' value='Update Profile' />
+			</form>
 			<button onClick={onLogOutClick}>Log Out</button>
-			<div>
-				{nweets.map((nweet) => (
-					<Nweet key={nweet.id} nweetObj={nweet} isOwner={nweet.creatorId === userObj.uid} />
-				))}
-			</div>
 		</>
 	);
 };

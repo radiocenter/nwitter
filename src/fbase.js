@@ -9,6 +9,7 @@ import {
 	GithubAuthProvider,
 	signInWithPopup,
 	signOut,
+	updateProfile,
 } from 'firebase/auth';
 import {
 	getFirestore,
@@ -47,6 +48,7 @@ export const authService = {
 	onAuthStateChanged,
 	signInWithPopup,
 	signOut,
+	updateProfile,
 };
 
 // Initialize Firestore and get a reference to the service
