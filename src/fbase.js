@@ -19,6 +19,9 @@ import {
 	doc,
 	deleteDoc,
 	updateDoc,
+	where,
+	query,
+	orderBy,
 } from 'firebase/firestore';
 import { getStorage, ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 
@@ -51,21 +54,26 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 async function wrapAddDoc(tweet) {
-	await addDoc(collection(db, 'nweet'), tweet);
+	await addDoc(collection(db, 'nweets'), tweet);
 }
 
-async function wrapGetDocs() {
-	const querySnapshot = await getDocs(collection(db, 'nweet'));
+async function wrapGetDocs(uid) {
+	const q = query(
+		collection(db, 'nweets'),
+		where('creatorId', '==', uid),
+		orderBy('createdAt', 'asc'),
+	);
+	const querySnapshot = await getDocs(q);
 	const result = [];
 	querySnapshot.forEach((doc) => {
 		const nweetObject = { ...doc.data(), id: doc.id };
-		result.push(nweetObject); // 최근 글이 먼저
+		result.push(nweetObject);
 	});
 	return result;
 }
 
 function wrapOnSnapshot(cb) {
-	const unsub = onSnapshot(collection(db, 'nweet'), cb);
+	const unsub = onSnapshot(collection(db, 'nweets'), cb);
 }
 
 async function wrapDeleteDoc(id) {
@@ -86,7 +94,7 @@ export const firebaseInstance = {
 };
 export const dbService = {
 	insertDoc: wrapAddDoc,
-	getList: wrapGetDocs,
+	getDocsList: wrapGetDocs,
 	onSnapshot: wrapOnSnapshot,
 	deleteDoc: wrapDeleteDoc,
 	updateDoc: wrapUpdateDoc,
