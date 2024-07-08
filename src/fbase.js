@@ -75,7 +75,8 @@ async function wrapGetDocs(uid) {
 }
 
 function wrapOnSnapshot(cb) {
-	const unsub = onSnapshot(collection(db, 'nweets'), cb);
+	const q = query(collection(db, 'nweets'), orderBy('createdAt', 'desc'));
+	const unsub = onSnapshot(q, cb);
 }
 
 async function wrapDeleteDoc(id) {
