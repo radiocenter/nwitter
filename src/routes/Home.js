@@ -7,7 +7,7 @@ const Home = ({ userObj }) => {
 	const [nweets, setNweets] = useState([]);
 
 	useEffect(() => {
-		dbService.onSnapshot((snapshot) => {
+		const unsubscribe = dbService.onSnapshot((snapshot) => {
 			const newArray = [];
 			snapshot.forEach((doc) => {
 				const nweetObj = { ...doc.data(), id: doc.id };
@@ -15,6 +15,8 @@ const Home = ({ userObj }) => {
 			});
 			setNweets(newArray);
 		});
+
+		return () => unsubscribe();
 	}, []);
 
 	return (
